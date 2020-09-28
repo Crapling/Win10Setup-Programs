@@ -1,20 +1,30 @@
+# for more information about this script refer to my Win10Setup-Debloat Script: https://github.com/Crapling/Win10Setup-Debloat
+
 $tweaks = @(
 	"InstallChoco",
     "InstallFirefox",
     "InstallDiscord",
-    "InstallJava"
+    "InstallJava",
+	"InstallWSL2",
+	"InstallPaintDotNet",
+	"InstallThunderbird",
+	"InstallLinkShellExtension",
+	"InstallUninstallView",
+	"InstallQBitTorrent"
 )
 
 $global:IsInitialized = 0
 $global:Default = 0
+$global:InstallEverything = 0
 $global:DriveLetters
 
+# installing Chocolatey and provide the option to move the default install drive
 Function InstallChoco {
 	$Title = ""
-	$Message = "To Install Chocolatey hit I or R to also change the installation drive"
+	$Message = "To Install Chocolatey hit I or R to also change the installation drive for all chocolatey installed programs"
 	$Options = "&Install", "&RelocateAndInstall"
 	Write-Output "About to install Chocolatey"
-    Write-Warning -Message "This is required for base programs"
+    Write-Warning -Message "This is required programs"
 	$DefaultChoice = 0
 	$Result = $Host.UI.PromptForChoice($Title, $Message, $Options, $DefaultChoice)
 
@@ -34,21 +44,29 @@ Function InstallChoco {
 		$env:ChocolateyInstall = [System.Environment]::GetEnvironmentVariable("ChocolateyInstall","Machine")	
 		}
 	if($Result -eq 0){
+		if (!($env:ChocolateyInstall) -or !(Test-Path -Path "$env:ChocolateyInstall" -ErrorAction SilentlyContinue)){
 			Write-Output "Installing Chocolatey..."
 			Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
 			choco install chocolatey-core.extension -y
+			} Else {
+				Write-Output "Chocolatey is already installed, skipping..."
+			}
 		}
+	PromptInstallAll
 	}
 
+# installing programs
 Function InstallJava {
 		$Title = ""
-		$Message = "To Install Java hit I otherwise use S to skip"
+		$Message = "To Install Java 8 hit I otherwise use S to skip"
 		$Options = "&Install", "&Skip"
-		
+		$Result = 0
 		$DefaultChoice = 1
-		$Result = $Host.UI.PromptForChoice($Title, $Message, $Options, $DefaultChoice)
-		if($Result -eq 0){
-			Write-Output "Installing Java..."
+		if (!($global:InstallEverything)){
+			$Result = $Host.UI.PromptForChoice($Title, $Message, $Options, $DefaultChoice)
+		}
+		if(($Result -eq 0) -or $global:InstallEverything){
+			Write-Output "Installing Java 8..."
 			choco install jre8 -y
 		}else{
 			Write-Warning -Message "Skipping..."
@@ -59,10 +77,12 @@ Function InstallFirefox {
 		$Title = ""
 		$Message = "To Install Firefox hit I otherwise use S to skip"
 		$Options = "&Install", "&Skip"
-		
+		$Result = 0
 		$DefaultChoice = 1
-		$Result = $Host.UI.PromptForChoice($Title, $Message, $Options, $DefaultChoice)
-		if($Result -eq 0){
+		if (!($global:InstallEverything)){
+			$Result = $Host.UI.PromptForChoice($Title, $Message, $Options, $DefaultChoice)
+		}
+		if(($Result -eq 0) -or $global:InstallEverything){
 			Write-Output "Installing Firefox..."
 			choco install firefox -y
 		}else{
@@ -74,10 +94,12 @@ Function InstallDiscord {
 		$Title = ""
 		$Message = "To Install Discord hit I otherwise use S to skip"
 		$Options = "&Install", "&Skip"
-		
+		$Result = 0
 		$DefaultChoice = 1
-		$Result = $Host.UI.PromptForChoice($Title, $Message, $Options, $DefaultChoice)
-		if($Result -eq 0){
+		if (!($global:InstallEverything)){
+			$Result = $Host.UI.PromptForChoice($Title, $Message, $Options, $DefaultChoice)
+		}
+		if(($Result -eq 0) -or $global:InstallEverything){
 			Write-Output "Installing Discord..."
 			choco install discord -y
 		}else{
@@ -85,7 +107,138 @@ Function InstallDiscord {
 		}
 	}
 
-# Initialize connected Drives, for further tweaking
+Function InstallWSL2 {
+		$Title = ""
+		$Message = "To Enable WSL2 hit E or use S to skip"
+		$Options = "&Enable", "&Skip"
+		$Result = 0
+		$DefaultChoice = 1
+		if (!($global:InstallEverything)){
+			$Result = $Host.UI.PromptForChoice($Title, $Message, $Options, $DefaultChoice)
+		}
+
+		if(($Result -eq 0) -or $global:InstallEverything){
+            InstallLinuxSubsystemV2
+        }else{
+			Write-Warning -Message "Skipping..."
+    }
+
+}
+
+Function InstallPaintDotNet{
+		$Title = ""
+		$Message = "To Install Paint.net hit I otherwise use S to skip"
+		$Options = "&Install", "&Skip"
+		$Result = 0
+		$DefaultChoice = 1
+		if (!($global:InstallEverything)){
+			$Result = $Host.UI.PromptForChoice($Title, $Message, $Options, $DefaultChoice)
+		}
+		if(($Result -eq 0) -or $global:InstallEverything){
+			Write-Output "Installing Paint.net..."
+			choco install paint.net -y
+		}else{
+			Write-Warning -Message "Skipping..."
+		}
+}
+
+Function InstallThunderbird {
+		$Title = ""
+		$Message = "To Install Thunderbird hit I otherwise use S to skip"
+		$Options = "&Install", "&Skip"
+		$Result = 0
+		$DefaultChoice = 1
+		if (!($global:InstallEverything)){
+			$Result = $Host.UI.PromptForChoice($Title, $Message, $Options, $DefaultChoice)
+		}
+		if(($Result -eq 0) -or $global:InstallEverything){
+			Write-Output "Installing Thunderbird..."
+			choco install thunderbird -y
+		}else{
+			Write-Warning -Message "Skipping..."
+		}
+}
+
+Function InstallLinkShellExtension{
+		$Title = ""
+		$Message = "To Install LinkShellExtension hit I otherwise use S to skip"
+		$Options = "&Install", "&Skip"
+		$Result = 0
+		$DefaultChoice = 1
+		if (!($global:InstallEverything)){
+			$Result = $Host.UI.PromptForChoice($Title, $Message, $Options, $DefaultChoice)
+		}
+		if(($Result -eq 0) -or $global:InstallEverything){
+			Write-Output "Installing LinkShellExtension..."
+			choco install linkshellextension -y
+		}else{
+			Write-Warning -Message "Skipping..."
+		}
+}
+
+Function InstallUninstallView {
+		$Title = ""
+		$Message = "To Install UninstallView hit I otherwise use S to skip"
+		$Options = "&Install", "&Skip"
+		$Result = 0
+		$DefaultChoice = 1
+		if (!($global:InstallEverything)){
+			$Result = $Host.UI.PromptForChoice($Title, $Message, $Options, $DefaultChoice)
+		}
+		if(($Result -eq 0) -or $global:InstallEverything){
+			Write-Output "Installing UninstallView..."
+			choco install uninstallview -y
+		}else{
+			Write-Warning -Message "Skipping..."
+		}
+}
+
+Function InstallQBitTorrent {
+		$Title = ""
+		$Message = "To Install QBitTorrent hit I otherwise use S to skip"
+		$Options = "&Install", "&Skip"
+		$Result = 0
+		$DefaultChoice = 1
+		if (!($global:InstallEverything)){
+			$Result = $Host.UI.PromptForChoice($Title, $Message, $Options, $DefaultChoice)
+		}
+		if(($Result -eq 0) -or $global:InstallEverything){
+			Write-Output "Installing QBitTorrent..."
+			choco install qbittorrent -y
+		}else{
+			Write-Warning -Message "Skipping..."
+		}
+}
+
+###
+#Helper Functions
+###
+
+Function PromptInstallAll {
+		$Title = ""
+		$Message = "If you want to install every program of this script choose A for AllInstall, or otherwise use D for DefaultInstall"
+		$Options = "&AllInstall", "&DefaultInstall"
+		
+		$DefaultChoice = 1
+		$Result = $Host.UI.PromptForChoice($Title, $Message, $Options, $DefaultChoice)
+		
+		if ($Result -eq 0) {
+			$global:InstallEverything = 1
+			Write-Output "I will install everything..."
+		} Else {
+			Write-Output "You chose to decide for every program..."
+	}
+}
+
+Function InstallLinuxSubsystemV2 {
+	if ((Get-WindowsOptionalFeature -Online -FeatureName "VirtualMachinePlatform").State -eq "Enabled"){
+		wsl --set-default-version 2
+	} Else {
+		Write-Warning -Message "Cannot enable WSL2, please enable VirtualMachinePlatform!"
+	}
+}
+
+# Initialize connected Drives for tweaking
 function InitDrives{
 	
 	# Store all drives letters to use them within ShowMenu function

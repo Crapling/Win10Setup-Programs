@@ -6,6 +6,10 @@ $tweaks = @(
     "InstallDiscord",
     "InstallJava",
 	"InstallWSL2",
+	"InstallUbuntuForWSL",
+	"InstallPutty",
+	"InstallWinSCP",
+	"InstallNeovim",
 	"InstallPaintDotNet",
 	"InstallThunderbird",
 	"InstallLinkShellExtension",
@@ -24,7 +28,7 @@ Function InstallChoco {
 	$Message = "To Install Chocolatey hit I or R to also change the installation drive for all chocolatey installed programs"
 	$Options = "&Install", "&RelocateAndInstall"
 	Write-Output "About to install Chocolatey"
-    Write-Warning -Message "This is required programs"
+    Write-Warning -Message "This is required for installing programs with this script"
 	$DefaultChoice = 0
 	$Result = $Host.UI.PromptForChoice($Title, $Message, $Options, $DefaultChoice)
 
@@ -107,22 +111,104 @@ Function InstallDiscord {
 		}
 	}
 
+# Works only when VirtualMachinePlatform and WSL version 1 are installed
 Function InstallWSL2 {
 		$Title = ""
-		$Message = "To Enable WSL2 hit E or use S to skip"
+		$Message = "To Enable WSL2 hit E or use S to skip (This works only if you have installed VirtualMachinePlatform and WSL version 1)"
 		$Options = "&Enable", "&Skip"
 		$Result = 0
 		$DefaultChoice = 1
 		if (!($global:InstallEverything)){
 			$Result = $Host.UI.PromptForChoice($Title, $Message, $Options, $DefaultChoice)
 		}
-
 		if(($Result -eq 0) -or $global:InstallEverything){
             InstallLinuxSubsystemV2
         }else{
 			Write-Warning -Message "Skipping..."
     }
+}
 
+Function InstallUbuntuForWSL{
+		$Title = ""
+		$Message = "To Install Ubuntu as Subsystem Distro hit I or use S to skip (This works only if you have installed WSL version 1 or 2)"
+		$Options = "&Install", "&Skip"
+		$Result = 0
+		$DefaultChoice = 1
+		if (!($global:InstallEverything)){
+			$Result = $Host.UI.PromptForChoice($Title, $Message, $Options, $DefaultChoice)
+		}
+		if(($Result -eq 0) -or $global:InstallEverything){
+            choco install wsl-ubuntu-2004
+        }else{
+			Write-Warning -Message "Skipping..."
+    }
+}
+
+Function InstallUbuntuHere{
+		$Title = ""
+		$Message = "To Install Ubuntu(WSL) Here  hit I or use S to skip (This works only if you have installed Ubuntu(WSL))"
+		$Options = "&Install", "&Skip"
+		$Result = 0
+		$DefaultChoice = 1
+		if (!($global:InstallEverything)){
+			$Result = $Host.UI.PromptForChoice($Title, $Message, $Options, $DefaultChoice)
+		}
+		if(($Result -eq 0) -or $global:InstallEverything){
+            choco install ubuntuhere
+        }else{
+			Write-Warning -Message "Skipping..."
+    }
+}
+
+Function InstallPutty {
+		$Title = ""
+		$Message = "To Install Putty hit I otherwise use S to skip"
+		$Options = "&Install", "&Skip"
+		$Result = 0
+		$DefaultChoice = 1
+		if (!($global:InstallEverything)){
+			$Result = $Host.UI.PromptForChoice($Title, $Message, $Options, $DefaultChoice)
+		}
+		if(($Result -eq 0) -or $global:InstallEverything){
+			Write-Output "Installing Putty..."
+			choco install putty -y
+		}else{
+			Write-Warning -Message "Skipping..."
+		}
+}
+
+Function InstallWinSCP {
+		$Title = ""
+		$Message = "To Install WinSCP hit I otherwise use S to skip"
+		$Options = "&Install", "&Skip"
+		$Result = 0
+		$DefaultChoice = 1
+		if (!($global:InstallEverything)){
+			$Result = $Host.UI.PromptForChoice($Title, $Message, $Options, $DefaultChoice)
+		}
+		if(($Result -eq 0) -or $global:InstallEverything){
+			Write-Output "Installing WinSCP..."
+			choco install winscp -y
+		}else{
+			Write-Warning -Message "Skipping..."
+		}
+}
+
+Function InstallNeovim {
+		$Title = ""
+		$Message = "To Install Neovim hit I otherwise use S to skip"
+		$Options = "&Install", "&Skip"
+		$Result = 0
+		$DefaultChoice = 1
+		if (!($global:InstallEverything)){
+			$Result = $Host.UI.PromptForChoice($Title, $Message, $Options, $DefaultChoice)
+		}
+		if(($Result -eq 0) -or $global:InstallEverything){
+			Write-Output "Installing Neovim..."
+			choco install neovim -y
+		}else{
+			Write-Warning -Message "Skipping..."
+		}
 }
 
 Function InstallPaintDotNet{

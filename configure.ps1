@@ -203,7 +203,7 @@ Function InstallNeovim {
 		if (!($global:InstallEverything)){
 			$Result = $Host.UI.PromptForChoice($Title, $Message, $Options, $DefaultChoice)
 		}
-		if(($Result -eq 0)){
+		if($Result -eq 0){
 			Write-Output "Installing Neovim..."
 			choco install neovim -y
 			choco upgrade neovim -y

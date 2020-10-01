@@ -196,19 +196,24 @@ Function InstallWinSCP {
 
 Function InstallNeovim {
 		$Title = ""
-		$Message = "To Install Neovim hit I otherwise use S to skip"
-		$Options = "&Install", "&Skip"
+		$Message = "To Install Neovim stable hit I, otherwise use B to install the beta for support more keyboard layouts or use S to skip"
+		$Options = "&Install",  "BetaInstall", "&Skip"
 		$Result = 0
 		$DefaultChoice = 1
 		if (!($global:InstallEverything)){
 			$Result = $Host.UI.PromptForChoice($Title, $Message, $Options, $DefaultChoice)
 		}
-		if(($Result -eq 0) -or $global:InstallEverything){
+		if(($Result -eq 0)){
 			Write-Output "Installing Neovim..."
 			choco install neovim -y
+			choco upgrade neovim -y
+		}elseif($Result -eq 1){
+			Write-Output "Installing Neovim beta..."
+			choco install neovim --pre -y
+			choco upgrade neovim --pre -y
 		}else{
 			Write-Warning -Message "Skipping..."
-		}
+	}
 }
 
 Function InstallPaintDotNet{
@@ -302,7 +307,7 @@ Function InstallQBitTorrent {
 
 Function PromptInstallAll {
 		$Title = ""
-		$Message = "If you want to install every program of this script choose A for AllInstall, or otherwise use D for DefaultInstall"
+		$Message = "If you want to install every program (except Neovim) of this script choose A for AllInstall, or otherwise use D for DefaultInstall"
 		$Options = "&AllInstall", "&DefaultInstall"
 		
 		$DefaultChoice = 1

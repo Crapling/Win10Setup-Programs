@@ -1,6 +1,6 @@
 # Win10Setup-Programs
 
-### !It's recommended to choose the default install drive via the settings app of windows!
+## It's recommended to choose the default install drive via the settings app of windows
 
 This is a script to install various default programs, it utilizes chocolatey to install them.
 It will also provide the option to decide whether you want to install all programs at once or decide for each one individually.

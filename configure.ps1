@@ -2,6 +2,7 @@
 
 $tweaks = @(
 	"InstallChoco",
+	"InstallNeovim",
     "InstallFirefox",
     "InstallDiscord",
     "InstallJava",
@@ -10,7 +11,6 @@ $tweaks = @(
     "InstallGit",
 	"InstallPutty",
 	"InstallWinSCP",
-	"InstallNeovim",
 	"InstallPaintDotNet",
 	"InstallThunderbird",
 	"InstallLinkShellExtension",

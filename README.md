@@ -5,11 +5,17 @@ In addition to that you will be able to choose the default install drive.
 
 Scripts will be added to the Desktop which will provide the 
 programs included:
-- 	  Chocolatey  
+- 	  Chocolatey
+-	  Neovim
 -     Firefox  
 -     Discord  
 -     Java 8
 -	  WSL2  
+-	  Ubuntu for WSL
+-	  Git
+-	  posh-git
+-	  Putty
+-	  WinSCP
 -	  PaintDotNet  
 -	  Thunderbird  
 -	  LinkShellExtension  

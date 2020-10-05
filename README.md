@@ -1,10 +1,13 @@
 # Win10Setup-Programs
+
+#!WARNING!
+it's recommended to choose the default install drive via the settings app of windows
+
 This is a script to install various default programs, it utilizes chocolatey to install them.
 It will also provide the option to decide whether you want to install all programs at once or decide for each one individually.
-In addition to that you will be able to choose the default install drive.
+In addition to that you will be able to choose the default install drive for chocolatey.
 
-Scripts will be added to the Desktop which will provide the 
-programs included:
+This script will provide the the following programs:
 - 	  Chocolatey
 -	  Neovim
 -     Firefox  

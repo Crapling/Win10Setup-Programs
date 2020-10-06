@@ -16,7 +16,8 @@ $tweaks = @(
 	"InstallLinkShellExtension",
 	"InstallUninstallView",
 	"InstallQBitTorrent",
-    "FinishedInstall"
+   "WaitForKey"
+   "Restart"
 )
 
 $global:IsInitialized = 0
@@ -54,14 +55,14 @@ $Title = ""
             if(!($SelectedDrive)){
                 $SelectedDrive=((Get-Location).Path.Substring(0,1))
             }
-        
+
 		    Write-Output "Parsing Environment Variable..."
             [System.Environment]::SetEnvironmentVariable("$ChocoToolsEnv", "${SelectedDrive}$ChocoPath\tools" ,[System.EnvironmentVariableTarget]::Machine)
             [System.Environment]::SetEnvironmentVariable("$ChocoEnv","${SelectedDrive}$ChocoPath",[System.EnvironmentVariableTarget]::Machine)
             # reinit environment variable
 		    $env:ChocolateyInstall = [System.Environment]::GetEnvironmentVariable("$ChocoEnv","Machine")
             $env:ChocolateyToolsLocation = [System.Environment]::GetEnvironmentVariable("$ChocoToolsEnv","Machine")
-                
+
             if(Test-Path -Path "${SelectedDrive}$ChocoPath"){
                 Write-Output "Chocolatey is already installed, skipping installation..."
                 $DoChocoInstall=0
@@ -295,9 +296,9 @@ Function InstallNeovim {
 		$Options = "&Install",  "&BetaInstall", "&Skip"
 		$Result = 0
 		$DefaultChoice = 2
-		
+
         $Result = $Host.UI.PromptForChoice($Title, $Message, $Options, $DefaultChoice)
-		
+
 		if($Result -eq 0){
 			Write-Output "Installing Neovim..."
 			choco install neovim -y
@@ -370,10 +371,10 @@ Function PromptInstallAll {
 		$Title = ""
 		$Message = "If you want to install every program (except Neovim) of this script choose A for AllInstall, or otherwise use D for DefaultInstall"
 		$Options = "&AllInstall", "&DefaultInstall"
-		
+
 		$DefaultChoice = 1
 		$Result = $Host.UI.PromptForChoice($Title, $Message, $Options, $DefaultChoice)
-		
+
 		if ($Result -eq 0) {
 			$global:InstallEverything = 1
 			Write-Output "I will install everything..."
@@ -393,13 +394,13 @@ Function InstallLinuxSubsystemV2 {
 
 # Initialize connected Drives for tweaking
 function InitDrives{
-	
+
 	# Store all drives letters to use them within ShowMenu function
     if ($global:IsInitialized -eq 0){
 	    Write-Verbose "Retrieving drives..." -Verbose
-	
+
 	    $global:DriveLetters = @((Get-Disk | Where-Object -FilterScript {$_.BusType -ne "USB"} | Get-Partition | Get-Volume | Where-Object -FilterScript {$null -ne $_.DriveLetter}).DriveLetter | Sort-Object)
-	
+
 	    if ($global:DriveLetters.Count -gt 1)
 	    {
 		    # If the number of disks is more than one, set the second drive in the list as default drive
@@ -433,18 +434,18 @@ function ShowMenu
 	[Parameter()]
 	[string]
 	$Title,
-	
+
 	[Parameter(Mandatory = $true)]
 	[array]
 	$Menu,
-	
+
 	[Parameter(Mandatory = $true)]
 	[int]
 	$Default
 	)
-	
+
 	Write-Information -MessageData $Title -InformationAction Continue
-	
+
 	$minY = [Console]::CursorTop
 	$y = [Math]::Max([Math]::Min($Default, $Menu.Count), 0)
 	do
@@ -464,7 +465,7 @@ function ShowMenu
 			}
 			$i++
 		}
-		
+
 		$k = [Console]::ReadKey()
 		switch ($k.Key)
 		{
@@ -493,6 +494,21 @@ function ShowMenu
 
 Function FinishedInstall{
     Write-Output  "`nFinished script, you can check for errors and close the window`n"
+}
+
+# Wait for key press
+Function WaitForKey {
+	##Modified by Crapling
+	Write-Warning -Message "About to restart to apply changes, close this window if you want to restart later manually"
+	##
+	Write-Output "Press any key to continue..."
+	[Console]::ReadKey($true) | Out-Null
+}
+
+# Restart computer
+Function Restart {
+	Write-Output "Restarting..."
+	Restart-Computer
 }
 
 # Call the desired tweak functions
